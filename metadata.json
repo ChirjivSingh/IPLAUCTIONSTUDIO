@@ -1,0 +1,5 @@
+{
+  "name": "IPL Auction Pro",
+  "description": "A real-time multiplayer IPL auction web app with smart auction flow, strategic bidding, and team building based on real IPL stats.",
+  "requestFramePermissions": []
+}

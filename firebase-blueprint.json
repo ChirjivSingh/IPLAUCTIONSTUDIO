@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "Room": {
+      "title": "Room",
+      "description": "A game room for the IPL auction.",
+      "type": "object",
+      "properties": {
+        "hostId": { "type": "string" },
+        "status": { "type": "string", "enum": ["lobby", "auction", "results"] },
+        "bidTimerDuration": { "type": "number" },
+        "currentBid": { "type": "object" },
+        "currentPlayerId": { "type": "string" },
+        "phase": { "type": "string" },
+        "isPaused": { "type": "boolean" },
+        "timerEnd": { "type": "number" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["hostId", "status"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "An IPL player available for auction.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "overseas": { "type": "boolean" },
+        "stats": { "type": "object" },
+        "tier": { "type": "string" },
+        "basePrice": { "type": "number" },
+        "increment": { "type": "number" },
+        "soldTo": { "type": "string" },
+        "soldPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["queued", "bidding", "sold", "unsold"] },
+        "order": { "type": "number" }
+      }
+    },
+    "User": {
+      "title": "User",
+      "description": "A participant in the auction.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "teamName": { "type": "string" },
+        "purse": { "type": "number" },
+        "isHost": { "type": "boolean" },
+        "joinedAt": { "type": "number" }
+      }
+    }
+  },
+  "firestore": {
+    "/rooms/{roomId}": { "schema": "Room", "description": "Room details" },
+    "/rooms/{roomId}/players/{playerId}": { "schema": "Player", "description": "Players in the room" },
+    "/rooms/{roomId}/users/{userId}": { "schema": "User", "description": "Users in the room" }
+  }
+}

@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isHost(roomId) {
+      return isAuthenticated() && get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        // Host can update anything
+        request.auth.uid == resource.data.hostId ||
+        // Players can update currentBid if it's a valid bid
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentBid', 'timerEnd']) &&
+          request.resource.data.currentBid.amount > resource.data.currentBid.amount &&
+          request.resource.data.currentBid.userId == request.auth.uid
+        )
+      );
+
+      match /users/{userId} {
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated() && request.auth.uid == userId;
+      }
+
+      match /players/{playerId} {
+        allow read: if isAuthenticated();
+        allow update: if isAuthenticated() && (
+          request.auth.uid == get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId
+        );
+        allow create: if isAuthenticated() && (
+          request.auth.uid == get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId
+        );
+      }
+    }
+  }
+}
